@@ -1,0 +1,16 @@
+{
+  "name": "zero-dep-live-reload",
+  "version": "0.1.0",
+  "description": "Zero-dependency live reload HTML server for local prototyping",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server"
+  },
+  "keywords": [
+    "template",
+    "boilerplate",
+    "reload"
+  ],
+  "author": "Mia Chen",
+  "license": "ISC"
+}

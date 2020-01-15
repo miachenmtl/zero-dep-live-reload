@@ -1,0 +1,24 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Zero Dependency Live Reload</title>
+</head>
+
+<body>
+  <!-- ↓ Content ↓-->
+  <div>
+    asdsdfsasdsfasdfd
+  </div>
+  <!-- ↓ JavaScript for Live Reload ↓ -->
+  <script>
+    const webSocket = new WebSocket("ws://localhost:8888");
+    webSocket.onmessage = function ({ data }) {
+      if (data === ':)') window.location.reload();
+      else console.log(`${data} received.`)
+    }
+    webSocket.onopen = () => { console.log('WebSocket opened!'); };
+  </script>
+</body>
+</html>
