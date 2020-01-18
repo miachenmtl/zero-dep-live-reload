@@ -3,22 +3,39 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Zero Dependency Live Reload</title>
+  <title>Zero-Dependency Live Reload</title>
+  <style>
+    /* 👇 Add custom CSS 👇 */
+    body {
+      font-size: 100%;
+    }
+    /* 👆 Add custom CSS 👆 */
+  </style>
 </head>
 
 <body>
-  <!-- ↓ Content ↓-->
-  <div>
-    asdsdfsasdsfasdfd
-  </div>
-  <!-- ↓ JavaScript for Live Reload ↓ -->
+  <!-- 👇 Replace with HTML content 👇-->
+  <h1>Hi all</h1>
+  <p>
+    Maggie loved to linger in the great spaces of the mill, and often came out with her black hair powdered to a soft whiteness that made her dark eyes flash out with new fire. The resolute din, the unresting motion of the great stones, giving her a dim, delicious awe as at the presence of an uncontrollable force; the meal forever pouring, pouring; the fine white powder softening all surfaces, and making the very spidernets look like a faery lace-work; the sweet, pure scent of the meal,—all helped to make Maggie feel that the mill was a little world apart from her outside everyday life.
+  </p>
+  <!-- 👆 Replace with HTML content 👆 -->
   <script>
+    // 👇 Add JavaScript here 👇
+
+    // 👆 Add JavaScript here 👆
+    // JS for Live Reload...
     const webSocket = new WebSocket("ws://localhost:8888");
     webSocket.onmessage = function ({ data }) {
-      if (data === ':)') window.location.reload();
-      else console.log(`${data} received.`)
+      if (data === ':)') {
+        webSocket.close();
+        window.location.reload();
+      }
+      else console.log(`Mysterious data received: ${data}.`)
     }
-    webSocket.onopen = () => { console.log('WebSocket opened!'); };
+    webSocket.onopen = () => { console.log('WebSocket connection opened!'); };
+    webSocket.onerror = (event) => { console.log(`WebSocket connection error: ${event}`); };
+    webSocket.onclose = () => { console.log('WebSocket connection closed!'); };
   </script>
 </body>
 </html>
