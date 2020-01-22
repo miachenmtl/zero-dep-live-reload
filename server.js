@@ -4,25 +4,32 @@ const { moveCursor } = require('readline');
 const fs = require('fs');
 
 const PORT = 8888;
+const WATCHED_FILENAME = 'index.html';
+const DEBOUNCE_INTERVAL = 50;
 const WEBSOCKET_MAGIC_STRING = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 
 const SPINNER_CHARS = '|/—\\';
 let spinnerCounter = 0;
 
-let connection;
+let connection; // FIXME: Allow multiple connections
 let intervalId;
 let isConnected = false;
-// change event fired twice on Linux, needs debouncing
-let lastModified = fs.statSync('index.html').mtimeMs;
+let lastModified = fs.statSync(WATCHED_FILENAME).mtimeMs;
 
-const watcher = fs.watch('index.html', (eventType, filename) => {
-  // Debounce
-  const watchModified = fs.statSync(filename).mtimeMs;
-  if (watchModified - lastModified > 50) {
-    lastModified = watchModified;
+const watcher = fs.watch('.', (eventType, filename) => {
+  // `fs.watch` is finicky. Recommended solution from thisdavej.com/how-to-watch-for-files-changes-in-node-js/
+  // suggests looking solely at time modified with debounce interval, but even that
+  // was buggy if only watching a single file. When editing on gedit on ubuntu, saving
+  // would trigger renames, temp file creations, etc...
+  // Watching a directory, filtering by filename, debouncing by modified time seems to work.
+  // No checking eventType since 'rename's happened just on save.
+  if (filename === WATCHED_FILENAME) {
+    const watchModified = fs.statSync(filename).mtimeMs;
+    if (watchModified - lastModified > DEBOUNCE_INTERVAL) {
+      lastModified = watchModified;
 
-    if (eventType === 'change' && isConnected) {
-      /*
+      if (isConnected) {
+        /*
         WebSocket Data Frame Anatomy
         0x81 = 0b10000001
           bit 1 = FIN = 1 Final data frame
@@ -33,15 +40,14 @@ const watcher = fs.watch('index.html', (eventType, filename) => {
           bits 2-8 = payload length = 0000010 Payload two bytes long
         0x3a = payload data = ':'
         0x29 = payload data = ')'
-      */
-     const message = Buffer.from([0x81, 0x02, 0x3a, 0x29]);
-     connection.write(message, () => {
-       console.log('Reload message sent to client.');
-     });
-    } else if (eventType === 'rename') {
-      console.log('index.html renamed! Why would you do such a thing?');
-    } else {
-      console.log('index.html updated, but nothing is connected!');
+        */
+        const message = Buffer.from([0x81, 0x02, 0x3a, 0x29]);
+        connection.write(message, () => {
+          console.log(`[${new Date().toLocaleTimeString()}]: Reload message sent to client.`);
+        });
+      } else {
+        console.log(`[${new Date().toLocaleTimeString()}]: ${WATCHED_FILENAME} updated, but nothing is connected!`);
+      }
     }
   }
 });
@@ -63,7 +69,10 @@ const pingClient = () => {
       0x67 = 'g'
     */
     const message = Buffer.from([0x89, 0x04, 0x70, 0x69, 0x6e, 0x67]);
-    connection.write(message, () => { 
+    connection.write(message, () => {
+      // poomoji will be replaced by spinner when pong received
+      // the browser WebSocket API automatically responds to pings by
+      // ponging the same payload (but masked).
       process.stdout.write('💩');
       moveCursor(process.stdout, -2, 0); // the emoji is 2 chars long
     });
@@ -72,13 +81,13 @@ const pingClient = () => {
 
 const server = createServer((request, response) => {
   if (request.url === '/') {
-    fs.readFile(filePath = 'index.html', function(error, content) {
+    fs.readFile(filePath = WATCHED_FILENAME, function(error, content) {
       if (error) {
         console.error(error);
         response.end(error.message);
       }
       else {
-        console.log('Serving index.html');
+        console.log(`Serving ${WATCHED_FILENAME}`);
           response.writeHead(200, { 'Content-Type': 'text/html' });
           response.end(content, 'utf-8');
       }
@@ -146,8 +155,7 @@ server.on('upgrade', (req, socket) => {
     `Sec-WebSocket-Accept: ${acceptKey}\r\n` +
     '\r\n',
     () => {
-      console.log('Connection upgraded.');
-      console.log('\n');
+      console.log('Connection upgraded.\n');
       isConnected = true;
       intervalId = setInterval(pingClient, 5000);
       connection = socket;
@@ -157,6 +165,6 @@ server.on('upgrade', (req, socket) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Server ready on localhost:${PORT}.`);
+  console.log(`[${new Date().toLocaleTimeString()}]: Server ready on localhost:${PORT}.`);
   console.log('=========================');
 });

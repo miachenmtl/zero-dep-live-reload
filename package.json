@@ -1,6 +1,6 @@
 {
   "name": "zero-dep-live-reload",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Zero-dependency live reload HTML server for local prototyping",
   "main": "server.js",
   "scripts": {

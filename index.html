@@ -3,11 +3,37 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Zero-Dependency Live Reload</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>🔨🔧👾🔧🔨</title>
+
+  <meta name="author" content="">
+  <meta name="description" content="">
   <style>
     /* 👇 Add custom CSS 👇 */
+    :root {
+      --bg-color: antiquewhite;
+      --color: darkslategray;
+    }
+
     body {
-      font-size: 100%;
+      margin: 0;
+      background-color: var(--bg-color);
+      color: var(--color);
+    }
+
+    .grid-wrapper {
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+    }
+
+    .centered-el {
+      margin: auto;
+      padding: 8px;
+      height: 180px;
+      width: 320px;
+      border: 1px solid black;
     }
     /* 👆 Add custom CSS 👆 */
   </style>
@@ -15,16 +41,17 @@
 
 <body>
   <!-- 👇 Replace with HTML content 👇-->
-  <h1>Hi all</h1>
-  <p>
-    Maggie loved to linger in the great spaces of the mill, and often came out with her black hair powdered to a soft whiteness that made her dark eyes flash out with new fire. The resolute din, the unresting motion of the great stones, giving her a dim, delicious awe as at the presence of an uncontrollable force; the meal forever pouring, pouring; the fine white powder softening all surfaces, and making the very spidernets look like a faery lace-work; the sweet, pure scent of the meal,—all helped to make Maggie feel that the mill was a little world apart from her outside everyday life.
-  </p>
+  <div class="grid-wrapper">
+    <div class="centered-el">
+      This is a 320px * 180px box vertically and horizontally centered using CSS grid and viewport units.
+    </div>
+  </div>
   <!-- 👆 Replace with HTML content 👆 -->
   <script>
     // 👇 Add JavaScript here 👇
 
     // 👆 Add JavaScript here 👆
-    // JS for Live Reload...
+    // JS for Live Reload... Do not touch!
     const webSocket = new WebSocket("ws://localhost:8888");
     webSocket.onmessage = function ({ data }) {
       if (data === ':)') {
