@@ -5,60 +5,40 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>🔨🔧👾🔧🔨</title>
+  <title>Zero-Dependency Live Reload</title>
 
   <meta name="author" content="">
   <meta name="description" content="">
   <style>
-    /* 👇 Add custom CSS 👇 */
-    :root {
-      --bg-color: antiquewhite;
-      --color: darkslategray;
-    }
-
-    body {
-      margin: 0;
-      background-color: var(--bg-color);
-      color: var(--color);
-    }
-
-    .grid-wrapper {
-      width: 100vw;
-      height: 100vh;
-      display: grid;
-    }
-
-    .centered-el {
-      margin: auto;
-      padding: 8px;
-      height: 180px;
-      width: 320px;
-      border: 1px solid black;
-    }
-    /* 👆 Add custom CSS 👆 */
+    /****************************************************
+     * Add CSS here                                     *
+     ****************************************************/
   </style>
 </head>
 
 <body>
-  <!-- 👇 Replace with HTML content 👇-->
-  <div class="grid-wrapper">
-    <div class="centered-el">
-      This is a 320px * 180px box vertically and horizontally centered using CSS grid and viewport units.
-    </div>
+<!-- ****************************************************
+     * Add HTML                                         *
+     ****************************************************-->
+  <div>
+    <h1>
+      Lorem Ipsum
+    </h1>
   </div>
-  <!-- 👆 Replace with HTML content 👆 -->
   <script>
-    // 👇 Add JavaScript here 👇
-
-    // 👆 Add JavaScript here 👆
-    // JS for Live Reload... Do not touch!
+    /****************************************************
+     * Add JavaScript here                              *
+     ****************************************************/
+  </script>
+  <!-- JS for Live Reload -->
+  <script>
     const webSocket = new WebSocket("ws://localhost:8888");
     webSocket.onmessage = function ({ data }) {
       if (data === ':)') {
         webSocket.close();
         window.location.reload();
       }
-      else console.log(`Mysterious data received: ${data}.`)
+      else console.log(`Unexpected data received: ${data}.`)
     }
     webSocket.onopen = () => { console.log('WebSocket connection opened!'); };
     webSocket.onerror = (event) => { console.log(`WebSocket connection error: ${event}`); };
